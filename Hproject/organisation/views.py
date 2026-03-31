@@ -1,3 +1,6 @@
+from django.shortcuts import render
+
+# Create your views here.
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -227,9 +230,9 @@ def dependency_create(request):
     return render(request, 'organisation/dependency_form.html', {'form': form})
 
 
-# ─────────────────────────────────────────────
+# 
 # AUDIT LOG
-# ─────────────────────────────────────────────
+#
 
 @login_required
 def audit_log(request):

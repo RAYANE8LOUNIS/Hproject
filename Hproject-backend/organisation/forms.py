@@ -54,5 +54,3 @@ class DependencyForm(forms.ModelForm):
         if upstream and downstream and upstream == downstream:
             raise forms.ValidationError('A team cannot depend on itself.')
         return cleaned_data
-
-### try 
