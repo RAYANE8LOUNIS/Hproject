@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ team.name }}</h1>
+
+<p><strong>Department:</strong> {{ team.department.name }}</p>
+<p><strong>Manager:</strong> {{ team.manager.username }}</p>
+<p><strong>Status:</strong> {{ team.status }}</p>
+
+<h3>Description</h3>
+<p>{{ team.description }}</p>
+
+<h3>Purpose</h3>
+<p>{{ team.purpose }}</p>
+
+<h3>Contact</h3>
+<p><strong>Email:</strong> {{ team.email }}</p>
+<a href="mailto:{{ team.email }}" class="btn">Email Team</a>
+<p><strong>Slack:</strong> {{ team.slack_channel }}</p>
+
+<h3>Team Members</h3>
+{% if members %}
+    <ul>
+        {% for member in members %}
+            <li>{{ member.username }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No team members available.</p>
+{% endif %}
+
+<h3>Code Repository</h3>
+{% if team.code_repository %}
+    <p><a href="{{ team.code_repository }}" target="_blank">Open Repository</a></p>
+{% else %}
+    <p>No repository available.</p>
+{% endif %}
+
+<h3>Dependencies</h3>
+{% if dependencies %}
+    <ul>
+        {% for dependency in dependencies %}
+            <li>
+                {% if dependency.upstream_team == team %}
+                    Upstream: {{ dependency.downstream_team.name }}
+                {% else %}
+                    Downstream: {{ dependency.upstream_team.name }}
+                {% endif %}
+                {% if dependency.description %}
+                    - {{ dependency.description }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No dependencies available.</p>
+{% endif %}
+
+<a href="{% url 'team_list' %}" class="btn">Back to Teams</a>
+{% endblock %}
