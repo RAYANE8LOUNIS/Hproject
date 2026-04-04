@@ -3,14 +3,16 @@
 {% block content %}
 <h1>Email Team: {{ team.name }}</h1>
 
-{% if team.email %}
-    <p><strong>Team Email:</strong> {{ team.email }}</p>
-    <p>
+<div class="team-card">
+    {% if team.email %}
+        <p><strong>Team Email:</strong> {{ team.email }}</p>
         <a href="mailto:{{ team.email }}" class="btn">Open Email App</a>
-    </p>
-{% else %}
-    <p>No team email available.</p>
-{% endif %}
+    {% else %}
+        <p>No team email available.</p>
+    {% endif %}
+</div>
 
-<a href="{% url 'team_detail' team.id %}" class="btn">Back to Team</a>
+<div style="margin-top: 20px;">
+    <a href="{% url 'team_detail' team.id %}" class="btn">Back to Team</a>
+</div>
 {% endblock %}

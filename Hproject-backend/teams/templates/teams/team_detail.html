@@ -1,101 +1,107 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <h1>{{ team.name }}</h1>
 
-<p><strong>Department:</strong> {{ team.department }}</p>
-<p><strong>Team Type:</strong> {{ team.team_type }}</p>
-<p><strong>Manager:</strong> {{ team.manager }}</p>
-<p><strong>Status:</strong> {{ team.get_status_display }}</p>
+<div class="team-card">
+    <h2>Overview</h2>
+    <p><strong>Department:</strong> {{ team.department }}</p>
+    <p><strong>Team Type:</strong> {{ team.team_type }}</p>
+    <p><strong>Manager:</strong> {{ team.manager }}</p>
+    <p>
+        <strong>Status:</strong>
+        <span class="badge badge-success">{{ team.get_status_display }}</span>
+    </p>
+</div>
 
-<h3>Description</h3>
-<p>
-    {% if team.description %}
-        {{ team.description }}
-    {% else %}
-        No description available.
-    {% endif %}
-</p>
+<div class="team-card">
+    <h2>Purpose</h2>
+    <p class="secondary-text">
+        {{ team.description|default:"No description provided." }}
+    </p>
+</div>
 
-<h3>Purpose</h3>
-<p>
-    {% if team.purpose %}
-        {{ team.purpose }}
-    {% else %}
-        No purpose available.
-    {% endif %}
-</p>
+<div class="team-card">
+    <h2>Skills</h2>
+    <p>
+        {% if team.team_type %}
+            {{ team.team_type.name }}
+        {% else %}
+            No team type assigned.
+        {% endif %}
+    </p>
+</div>
 
-<h3>Skills</h3>
-<p>
-    Team type:
-    {% if team.team_type %}
-        {{ team.team_type.name }}
-    {% else %}
-        No team type assigned.
-    {% endif %}
-</p>
+<div class="team-card">
+    <h2>Contact</h2>
+    <p><strong>Email:</strong> {{ team.email|default:"No email available." }}</p>
+    <p><strong>Slack:</strong> {{ team.slack_channel|default:"No Slack channel available." }}</p>
 
-<h3>Contact</h3>
-<p><strong>Email:</strong> {{ team.email|default:"No email available." }}</p>
-<p><strong>Slack:</strong> {{ team.slack_channel|default:"No Slack channel available." }}</p>
+    <div style="margin-top: 15px; display: flex; gap: 12px; flex-wrap: wrap;">
+        {% if team.email %}
+            <a href="{% url 'email_team' team.id %}" class="btn">Email Team</a>
+        {% endif %}
+        <a href="{% url 'schedule_meeting' team.id %}" class="btn">Schedule Meeting</a>
+    </div>
+</div>
 
-{% if team.email %}
-    <a href="{% url 'email_team' team.id %}" class="btn">Email Team</a>
-{% endif %}
-<a href="{% url 'schedule_meeting' team.id %}" class="btn">Schedule Meeting</a>
-
-<h3>Team Members</h3>
-{% if members %}
+<div class="team-card">
+    <h2>Team Members</h2>
     <ul>
         {% for member in members %}
             <li>{{ member.username }}</li>
+        {% empty %}
+            <li>No members assigned.</li>
         {% endfor %}
     </ul>
-{% else %}
-    <p>No team members available.</p>
-{% endif %}
+</div>
 
-<h3>Code Repository</h3>
-{% if team.code_repository %}
-    <p><a href="{{ team.code_repository }}" target="_blank">Open Repository</a></p>
-{% else %}
-    <p>No repository available.</p>
-{% endif %}
+<div class="team-card">
+    <h2>Code Repository</h2>
+    {% if team.code_repository %}
+        <p>
+            <a href="{{ team.code_repository }}" target="_blank">View Repository</a>
+        </p>
+    {% else %}
+        <p class="secondary-text">No repository available.</p>
+    {% endif %}
+</div>
 
-<h3>Upstream Dependencies</h3>
-{% if upstream_dependencies %}
+<div class="team-card">
+    <h2>Upstream Dependencies</h2>
     <ul>
-        {% for dependency in upstream_dependencies %}
+        {% for dep in upstream_dependencies %}
             <li>
-                Depends on: {{ dependency.downstream_team.name }}
-                {% if dependency.description %}
-                    - {{ dependency.description }}
+                {{ dep.downstream_team.name }}
+                {% if dep.description %}
+                    - {{ dep.description }}
                 {% endif %}
             </li>
+        {% empty %}
+            <li>No upstream dependencies.</li>
         {% endfor %}
     </ul>
-{% else %}
-    <p>No upstream dependencies.</p>
-{% endif %}
+</div>
 
-<h3>Downstream Dependencies</h3>
-{% if downstream_dependencies %}
+<div class="team-card">
+    <h2>Downstream Dependencies</h2>
     <ul>
-        {% for dependency in downstream_dependencies %}
+        {% for dep in downstream_dependencies %}
             <li>
-                Depended on by: {{ dependency.upstream_team.name }}
-                {% if dependency.description %}
-                    - {{ dependency.description }}
+                {{ dep.upstream_team.name }}
+                {% if dep.description %}
+                    - {{ dep.description }}
                 {% endif %}
             </li>
+        {% empty %}
+            <li>No downstream dependencies.</li>
         {% endfor %}
     </ul>
-{% else %}
-    <p>No downstream dependencies.</p>
-{% endif %}
+</div>
 
-<br>
-<a href="{% url 'team_list' %}" class="btn">Back to Teams</a>
+<div style="margin-top: 20px;">
+    <a href="{% url 'team_list' %}" class="btn">Back to Teams</a>
+</div>
 
 {% endblock %}
