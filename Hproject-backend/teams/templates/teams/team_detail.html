@@ -18,19 +18,34 @@
 <div class="team-card">
     <h2>Purpose</h2>
     <p class="secondary-text">
-        {{ team.description|default:"No description provided." }}
+        {% if team.description %}
+            {{ team.description }}
+        {% else %}
+            No description provided.
+        {% endif %}
     </p>
 </div>
 
 <div class="team-card">
     <h2>Skills</h2>
-    <p>
+
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;">
         {% if team.team_type %}
-            {{ team.team_type.name }}
-        {% else %}
-            No team type assigned.
+            <span class="badge badge-info">{{ team.team_type.name }}</span>
         {% endif %}
-    </p>
+
+        {% if team.department and team.department.specialisation %}
+            <span class="badge badge-info">{{ team.department.specialisation }}</span>
+        {% endif %}
+    </div>
+
+    {% if team.team_type or team.department.specialisation %}
+        <p class="secondary-text">
+            This team’s skills are represented by its team type and department specialisation.
+        </p>
+    {% else %}
+        <p class="secondary-text">No skills information available.</p>
+    {% endif %}
 </div>
 
 <div class="team-card">
@@ -48,6 +63,10 @@
 
 <div class="team-card">
     <h2>Team Members</h2>
+    <p class="secondary-text" style="margin-bottom: 10px;">
+        {{ members|length }} member(s)
+    </p>
+
     <ul>
         {% for member in members %}
             <li>{{ member.username }}</li>
@@ -73,7 +92,9 @@
     <ul>
         {% for dep in upstream_dependencies %}
             <li>
-                {{ dep.downstream_team.name }}
+                <a href="{% url 'team_detail' dep.downstream_team.id %}">
+                    {{ dep.downstream_team.name }}
+                </a>
                 {% if dep.description %}
                     - {{ dep.description }}
                 {% endif %}
@@ -89,7 +110,9 @@
     <ul>
         {% for dep in downstream_dependencies %}
             <li>
-                {{ dep.upstream_team.name }}
+                <a href="{% url 'team_detail' dep.upstream_team.id %}">
+                    {{ dep.upstream_team.name }}
+                </a>
                 {% if dep.description %}
                     - {{ dep.description }}
                 {% endif %}
