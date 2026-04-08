@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function TeamProfile({ team, onBack }) {
+export default function TeamProfile() {
+  const navigate = useNavigate();
+  const { teamId } = useParams();
+
   const [activeTab, setActiveTab] = useState("Overview");
   const [teamDetail, setTeamDetail] = useState(null);
 
   const tabs = ["Overview", "Members", "Repositories", "Dependencies"];
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/teams/api/teams/${team.id}/`)
+    fetch(`http://127.0.0.1:8000/teams/api/teams/${teamId}/`)
       .then((res) => res.json())
       .then((data) => setTeamDetail(data))
       .catch((err) => console.error("Error fetching team detail:", err));
-  }, [team.id]);
+  }, [teamId]);
 
   if (!teamDetail) {
     return <div className="team-card">Loading team profile...</div>;
@@ -21,12 +25,10 @@ export default function TeamProfile({ team, onBack }) {
     ? `mailto:${teamDetail.email}?subject=${encodeURIComponent(`Message for ${teamDetail.name}`)}`
     : null;
 
-  const scheduleHref = `/teams/${team.id}/schedule/`;
-
   return (
     <>
       <div className="profile-actions">
-        <button className="icon-btn" onClick={onBack}>
+        <button className="icon-btn" onClick={() => navigate("/teams")}>
           ←
         </button>
       </div>
@@ -53,7 +55,7 @@ export default function TeamProfile({ team, onBack }) {
           )}
 
           <a
-            href={`http://127.0.0.1:8000${scheduleHref}`}
+            href={`http://127.0.0.1:8000/teams/${teamId}/schedule/`}
             className="primary-btn link-btn"
             target="_blank"
             rel="noreferrer"
@@ -131,15 +133,9 @@ export default function TeamProfile({ team, onBack }) {
             <div className="team-card">
               <h3>Skills</h3>
               <div className="skills-wrap">
-                <span className="pill-tag">
-                  {teamDetail.team_type || "No Team Type"}
-                </span>
-                <span className="pill-tag">
-                  {teamDetail.department || "No Department"}
-                </span>
-                <span className="pill-tag">
-                  {teamDetail.status || "Unknown Status"}
-                </span>
+                <span className="pill-tag">{teamDetail.team_type || "No Team Type"}</span>
+                <span className="pill-tag">{teamDetail.department || "No Department"}</span>
+                <span className="pill-tag">{teamDetail.status || "Unknown Status"}</span>
               </div>
             </div>
 
@@ -184,7 +180,12 @@ export default function TeamProfile({ team, onBack }) {
             <div className="repo-card">
               <strong>Main Repository</strong>
               <p className="muted-text">{teamDetail.code_repository}</p>
-              <a href={teamDetail.code_repository} target="_blank" rel="noreferrer" className="secondary-btn link-btn small-link-btn">
+              <a
+                href={teamDetail.code_repository}
+                target="_blank"
+                rel="noreferrer"
+                className="secondary-btn link-btn small-link-btn"
+              >
                 Open Repository
               </a>
             </div>

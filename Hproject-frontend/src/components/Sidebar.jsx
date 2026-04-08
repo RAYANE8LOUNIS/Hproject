@@ -1,13 +1,20 @@
-function SidebarItem({ label, active = false }) {
+import { NavLink } from "react-router-dom";
+
+function SidebarItem({ label, to }) {
   return (
-    <div className={`sidebar-item ${active ? "active" : ""}`}>
+    <NavLink
+      to={to}
+      className={({ isActive }) =>
+        `sidebar-item ${isActive ? "active" : ""}`
+      }
+    >
       <span className="sidebar-icon" />
       <span>{label}</span>
-    </div>
+    </NavLink>
   );
 }
 
-export default function Sidebar({ active }) {
+export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="logo-wrap">
@@ -16,11 +23,11 @@ export default function Sidebar({ active }) {
       </div>
 
       <nav className="sidebar-nav">
-        <SidebarItem label="Dashboard" active={active === "Dashboard"} />
-        <SidebarItem label="Teams" active={active === "Teams"} />
-        <SidebarItem label="Organisation" active={active === "Organisation"} />
-        <SidebarItem label="Messages" active={active === "Messages"} />
-        <SidebarItem label="Schedule" active={active === "Schedule"} />
+        <SidebarItem label="Dashboard" to="/dashboard" />
+        <SidebarItem label="Teams" to="/teams" />
+        <SidebarItem label="Organisation" to="/organisation" />
+        <SidebarItem label="Messages" to="/messages" />
+        <SidebarItem label="Schedule" to="/schedule" />
       </nav>
     </aside>
   );

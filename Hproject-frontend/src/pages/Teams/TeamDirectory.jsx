@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function AvatarGroup() {
   return (
@@ -32,7 +33,7 @@ function TeamCard({ team, onOpenTeam }) {
         <AvatarGroup />
 
         <div className="card-actions">
-          <button className="primary-btn" onClick={() => onOpenTeam(team)}>
+          <button className="primary-btn" onClick={() => onOpenTeam(team.id)}>
             Open
           </button>
           <button className="icon-btn">⋮</button>
@@ -42,7 +43,9 @@ function TeamCard({ team, onOpenTeam }) {
   );
 }
 
-export default function TeamDirectory({ onOpenTeam }) {
+export default function TeamDirectory() {
+  const navigate = useNavigate();
+
   const [teams, setTeams] = useState([]);
   const [search, setSearch] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("All Departments");
@@ -129,7 +132,11 @@ export default function TeamDirectory({ onOpenTeam }) {
 
       <section className="cards-grid">
         {filteredTeams.map((team) => (
-          <TeamCard key={team.id} team={team} onOpenTeam={onOpenTeam} />
+          <TeamCard
+            key={team.id}
+            team={team}
+            onOpenTeam={(id) => navigate(`/teams/${id}`)}
+          />
         ))}
       </section>
     </>
