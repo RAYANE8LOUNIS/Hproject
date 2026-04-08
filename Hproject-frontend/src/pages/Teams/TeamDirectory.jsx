@@ -13,7 +13,10 @@ function AvatarGroup() {
 
 function TeamCard({ team, onOpenTeam }) {
   return (
-    <div className="team-card">
+    <div
+      className="team-card clickable-card"
+      onClick={() => onOpenTeam(team.id)}
+    >
       <div className="team-card-top">
         <div>
           <h3>{team.name}</h3>
@@ -33,10 +36,12 @@ function TeamCard({ team, onOpenTeam }) {
         <AvatarGroup />
 
         <div className="card-actions">
-          <button className="primary-btn" onClick={() => onOpenTeam(team.id)}>
-            Open
+          <button
+            className="icon-btn"
+            onClick={(e) => e.stopPropagation()}
+          >
+            ⋮
           </button>
-          <button className="icon-btn">⋮</button>
         </div>
       </div>
     </div>
@@ -47,6 +52,7 @@ export default function TeamDirectory() {
   const navigate = useNavigate();
 
   const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("All Departments");
   const [sortBy, setSortBy] = useState("Sort by Name");
@@ -54,8 +60,14 @@ export default function TeamDirectory() {
   useEffect(() => {
     fetch("http://127.0.0.1:8000/teams/api/teams/")
       .then((res) => res.json())
-      .then((data) => setTeams(data))
-      .catch((err) => console.error("Error fetching teams:", err));
+      .then((data) => {
+        setTeams(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching teams:", err);
+        setLoading(false);
+      });
   }, []);
 
   const filteredTeams = useMemo(() => {
@@ -123,22 +135,31 @@ export default function TeamDirectory() {
           <option>Sort by Members</option>
           <option>Sort by Repositories</option>
         </select>
+      </section>
 
-        <div className="view-toggle">
-          <button className="view-btn active">◧</button>
-          <button className="view-btn">≣</button>
+      {loading ? (
+        <div className="team-card empty-state-card">
+          <h3>Loading teams...</h3>
+          <p className="muted-text">Please wait while the team directory loads.</p>
         </div>
-      </section>
-
-      <section className="cards-grid">
-        {filteredTeams.map((team) => (
-          <TeamCard
-            key={team.id}
-            team={team}
-            onOpenTeam={(id) => navigate(`/teams/${id}`)}
-          />
-        ))}
-      </section>
+      ) : filteredTeams.length === 0 ? (
+        <div className="team-card empty-state-card">
+          <h3>No teams found</h3>
+          <p className="muted-text">
+            Try changing the search or filter options.
+          </p>
+        </div>
+      ) : (
+        <section className="cards-grid">
+          {filteredTeams.map((team) => (
+            <TeamCard
+              key={team.id}
+              team={team}
+              onOpenTeam={(id) => navigate(`/teams/${id}`)}
+            />
+          ))}
+        </section>
+      )}
     </>
   );
 }
