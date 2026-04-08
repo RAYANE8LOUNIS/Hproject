@@ -4,9 +4,7 @@ function SidebarItem({ label, to }) {
   return (
     <NavLink
       to={to}
-      className={({ isActive }) =>
-        `sidebar-item ${isActive ? "active" : ""}`
-      }
+      className={({ isActive }) => `sidebar-item ${isActive ? "active" : ""}`}
     >
       <span className="sidebar-icon" />
       <span>{label}</span>
@@ -18,7 +16,7 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="logo-wrap">
-        <div className="logo-icon">≋</div>
+        <div className="logo-icon"></div>
         <div className="logo-text">Sky Portal</div>
       </div>
 

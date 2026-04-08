@@ -8,7 +8,7 @@ import TeamProfile from "./pages/Teams/TeamProfile";
 function TeamsLayout({ children, title }) {
   return (
     <div className="app-shell">
-      <Sidebar active="Teams" />
+      <Sidebar />
       <main className="main-content">
         <Header title={title} />
         {children}
@@ -20,12 +20,14 @@ function TeamsLayout({ children, title }) {
 function PlaceholderPage({ title }) {
   return (
     <div className="app-shell">
-      <Sidebar active={title} />
+      <Sidebar />
       <main className="main-content">
         <Header title={title} />
         <div className="team-card">
           <h3>{title}</h3>
-          <p className="muted-text">This section will be connected when your teammate finishes it.</p>
+          <p className="muted-text">
+            This section will be connected when your teammate finishes it.
+          </p>
         </div>
       </main>
     </div>
