@@ -20,39 +20,41 @@
     <div class="app-layout">
 
         <aside class="app-sidebar">
-            <div class="sidebar-brand">
-                <div class="top-shell-brand d-flex align-items-center gap-2">
-                    <img src="{% static 'images/cloud.png' %}" alt="Sky Logo" style="height: 32px;">
+            <div class="app-sidebar-inner">
+                <div class="sidebar-brand">
+                    <div class="top-shell-brand d-flex align-items-center gap-2">
+                        <img src="{% static 'images/cloud.png' %}" alt="Sky Logo" style="height: 32px;">
+                    </div>
+                    <div class="sidebar-brand-text">Sky Portal</div>
                 </div>
-                <div class="sidebar-brand-text">Sky Portal</div>
+
+                <nav class="sidebar-nav">
+                    <a href="{% url 'dashboard' %}" class="sidebar-link {% block nav_dashboard %}{% endblock %}">
+                        <span class="sidebar-link-icon"></span>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <a href="{% url 'team_list' %}" class="sidebar-link {% block nav_teams %}{% endblock %}">
+                        <span class="sidebar-link-icon"></span>
+                        <span>Teams</span>
+                    </a>
+
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-link-icon"></span>
+                        <span>Organisation</span>
+                    </a>
+
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-link-icon"></span>
+                        <span>Messages</span>
+                    </a>
+
+                    <a href="#" class="sidebar-link">
+                        <span class="sidebar-link-icon"></span>
+                        <span>Schedule</span>
+                    </a>
+                </nav>
             </div>
-
-            <nav class="sidebar-nav">
-                <a href="{% url 'dashboard' %}" class="sidebar-link {% block nav_dashboard %}{% endblock %}">
-                    <span class="sidebar-link-icon"></span>
-                    <span>Dashboard</span>
-                </a>
-
-                <a href="{% url 'team_list' %}" class="sidebar-link {% block nav_teams %}{% endblock %}">
-                    <span class="sidebar-link-icon"></span>
-                    <span>Teams</span>
-                </a>
-
-                <a href="#" class="sidebar-link">
-                    <span class="sidebar-link-icon"></span>
-                    <span>Organisation</span>
-                </a>
-
-                <a href="#" class="sidebar-link">
-                    <span class="sidebar-link-icon"></span>
-                    <span>Messages</span>
-                </a>
-
-                <a href="#" class="sidebar-link">
-                    <span class="sidebar-link-icon"></span>
-                    <span>Schedule</span>
-                </a>
-            </nav>
         </aside>
 
         <div class="app-main">

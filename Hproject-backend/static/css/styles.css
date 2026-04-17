@@ -40,17 +40,21 @@ body {
     gap: 24px;
     padding: 16px;
     background: var(--bg);
+    align-items: flex-start;
 }
 
 .app-sidebar {
     width: 290px;
     flex-shrink: 0;
+}
+
+.app-sidebar-inner {
     background: var(--primary);
     border-radius: 30px;
     padding: 20px 18px 24px;
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
-    min-height: calc(100vh - 32px);
+    width: 100%;
 }
 
 .app-main {
