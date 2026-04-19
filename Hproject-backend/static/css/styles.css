@@ -231,7 +231,13 @@ body {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
-    box-shadow: none;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.sky-team-card:hover {
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
 }
 
 .panel-card .card-body,
