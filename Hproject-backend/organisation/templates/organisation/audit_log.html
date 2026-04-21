@@ -1,0 +1,30 @@
+{% extends 'organisation/base.html' %}
+{% block title %}Audit Log – Sky Portal{% endblock %}
+{% block page_title %}Audit Log{% endblock %}
+{% block content %}
+<div class="portal-bc">
+    <a href="{% url 'organisation:organisation_overview' %}">Organisation</a><span class="sep">/</span><span class="current">Audit Log</span>
+</div>
+<div style="margin-bottom:20px;">
+    <p style="color:#6b7280;font-size:0.9rem;margin:0;">Full history of all changes made to departments and teams</p>
+</div>
+<div class="portal-table">
+    <div class="table-title"><i class="bi bi-clock-history"></i> Activity History</div>
+    <table>
+        <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Model</th><th>Description</th></tr></thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td style="color:#6b7280;font-size:0.83rem;white-space:nowrap;">{{ log.timestamp|date:"d M Y H:i" }}</td>
+                <td style="font-weight:500;color:#0d1b4b;">{{ log.user.username|default:"System" }}</td>
+                <td><span class="{% if log.action == 'created' %}badge-active{% elif log.action == 'deleted' %}badge-disbanded{% else %}badge-restructured{% endif %}">{{ log.action|capfirst }}</span></td>
+                <td style="color:#374151;">{{ log.model_name }}</td>
+                <td style="color:#6b7280;font-size:0.88rem;">{{ log.description }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:#9ca3af;">No audit records yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

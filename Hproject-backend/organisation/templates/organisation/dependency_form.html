@@ -1,0 +1,33 @@
+{% extends 'organisation/base.html' %}
+{% block title %}Add Dependency – Sky Portal{% endblock %}
+{% block page_title %}Add Dependency{% endblock %}
+{% block content %}
+<div class="portal-bc">
+    <a href="{% url 'organisation:organisation_overview' %}">Organisation</a><span class="sep">/</span>
+    <a href="{% url 'organisation:dependency_map' %}">Dependency Map</a><span class="sep">/</span>
+    <span class="current">Add Dependency</span>
+</div>
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="portal-form-card">
+            <div class="portal-form-header"><i class="bi bi-share"></i> Add Team Dependency</div>
+            <div class="portal-form-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div style="margin-bottom:18px;">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div style="color:#991b1b;font-size:0.82rem;margin-top:4px;">{{ field.errors }}</div>{% endif %}
+                    </div>
+                    {% endfor %}
+                    <div style="display:flex;gap:10px;margin-top:24px;">
+                        <button type="submit" class="btn-portal"><i class="bi bi-check-lg" style="margin-right:6px;"></i>Save Dependency</button>
+                        <a href="{% url 'organisation:dependency_map' %}" class="btn-portal-outline">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

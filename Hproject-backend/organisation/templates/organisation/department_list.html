@@ -1,0 +1,48 @@
+{% extends 'organisation/base.html' %}
+{% block title %}Departments – Sky Portal{% endblock %}
+{% block page_title %}Departments{% endblock %}
+{% block content %}
+<div class="portal-bc">
+    <a href="{% url 'organisation:organisation_overview' %}">Organisation</a><span class="sep">/</span><span class="current">Departments</span>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+    <p style="color:#6b7280;font-size:0.9rem;margin:0;">{{ departments.count }} department{{ departments.count|pluralize }} found</p>
+    {% if user.is_staff %}<a href="{% url 'organisation:department_create' %}" class="btn-portal"><i class="bi bi-plus-lg" style="margin-right:6px;"></i>New Department</a>{% endif %}
+</div>
+<form method="GET" style="margin-bottom:20px;">
+    <div class="portal-search">
+        <i class="bi bi-search"></i>
+        <input type="text" name="q" placeholder="Search by name, leader or specialisation..." value="{{ query }}">
+        {% if query %}<a href="{% url 'organisation:department_list' %}" style="font-size:0.84rem;color:#6b7280;text-decoration:none;white-space:nowrap;">Clear</a>{% endif %}
+    </div>
+</form>
+<div class="portal-table">
+    <div class="table-title"><i class="bi bi-building"></i> All Departments</div>
+    <table>
+        <thead>
+            <tr><th>Department</th><th>Leader</th><th>Specialisation</th><th>Teams</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for dept in departments %}
+            <tr>
+                <td style="font-weight:600;color:#0d1b4b;">{{ dept.name }}</td>
+                <td>{{ dept.leader.get_full_name|default:dept.leader.username|default:"—" }}</td>
+                <td>{% if dept.specialisation %}<span class="badge-dept">{{ dept.specialisation }}</span>{% else %}—{% endif %}</td>
+                <td><span class="badge-count">{{ dept.team_count }}</span></td>
+                <td>
+                    <div style="display:flex;gap:6px;">
+                        <a href="{% url 'organisation:department_detail' dept.pk %}" class="btn-portal btn-portal-sm">View</a>
+                        {% if user.is_staff %}
+                        <a href="{% url 'organisation:department_edit' dept.pk %}" class="btn-portal-outline btn-portal-sm">Edit</a>
+                        <a href="{% url 'organisation:department_delete' dept.pk %}" class="btn-danger-outline">Delete</a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:#9ca3af;">No departments found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
