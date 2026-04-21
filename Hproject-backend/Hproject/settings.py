@@ -19,10 +19,10 @@ INSTALLED_APPS = [
     'accounts',
     'organisation',
     'teams',
-    'messaging',
-    'schedule',
-    'reports',
-    'datavis',
+#    'messaging',
+#    'schedule',
+#    'reports',
+#    'datavis',
 ]
 
 MIDDLEWARE = [
@@ -41,7 +41,7 @@ ROOT_URLCONF = 'Hproject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
