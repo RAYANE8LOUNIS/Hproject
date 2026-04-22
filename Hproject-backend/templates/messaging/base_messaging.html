@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Messages | Sky Portal{% endblock %}
+{% block nav_messages %}active{% endblock %}
+{% block page_heading %}Contact Teams{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+    <!-- Sidebar -->
+    <div class="col-md-3">
+        <div class="panel-card">
+            <div class="card-body" style="padding: 18px;">
+
+                <a href="{% url 'messaging:compose' %}" class="btn btn-sky-primary w-100 mb-3">
+                    <i class="bi bi-pencil-square me-2"></i>New Message
+                </a>
+
+                <div class="d-flex flex-column gap-1">
+                    <a href="{% url 'messaging:inbox' %}" class="sidebar-cat {% if active_tab == 'inbox' %}active{% endif %}">
+                        <span><i class="bi bi-inbox me-2"></i>Inbox</span>
+                        {% if inbox_count %}
+                        <span class="cat-badge">{{ inbox_count }}</span>
+                        {% endif %}
+                    </a>
+
+                    <a href="{% url 'messaging:sent' %}" class="sidebar-cat {% if active_tab == 'sent' %}active{% endif %}">
+                        <span><i class="bi bi-send me-2"></i>Sent</span>
+                    </a>
+
+                    <a href="{% url 'messaging:drafts' %}" class="sidebar-cat {% if active_tab == 'drafts' %}active{% endif %}">
+                        <span><i class="bi bi-file-earmark-text me-2"></i>Drafts</span>
+                        {% if drafts_count %}
+                        <span class="cat-badge">{{ drafts_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9">
+        {% if messages %}
+        <div id="flash-messages" class="mb-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block messaging_content %}{% endblock %}
+    </div>
+
+</div>
+
+<style>
+    .sidebar-cat {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        border-radius: var(--radius-pill);
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 400;
+        color: var(--muted);
+        transition: all 0.2s ease;
+    }
+    .sidebar-cat:hover {
+        background: var(--pill-bg);
+        color: var(--text);
+    }
+    .sidebar-cat.active {
+        background: #eef0f7;
+        color: var(--primary);
+        font-weight: 600;
+    }
+    .cat-badge {
+        background: var(--primary);
+        color: #ffffff;
+        min-width: 22px;
+        height: 22px;
+        padding: 0 7px;
+        border-radius: var(--radius-pill);
+        font-size: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .msg-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 24px;
+        text-decoration: none;
+        color: inherit;
+        transition: background 0.15s ease;
+        border-bottom: 1px solid var(--border);
+    }
+    .msg-row:last-child { border-bottom: none; }
+    .msg-row:hover { background: var(--pill-bg); }
+    .msg-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+    .msg-avatar.sm { width: 38px; height: 38px; font-size: 15px; }
+    .msg-avatar.draft-icon { background: #ffedd5; color: #ea580c; }
+    .unread-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: var(--primary);
+        display: inline-block;
+    }
+</style>
+{% endblock %}
