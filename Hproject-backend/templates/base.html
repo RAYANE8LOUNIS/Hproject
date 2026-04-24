@@ -53,6 +53,11 @@
                     <span class="sidebar-link-icon"><i class="bi bi-calendar3"></i></span>
                     <span>Schedule</span>
                 </a>
+
+                <a href="{% url 'datavis_charts' %}" class="sidebar-link {% block nav_datavis %}{% endblock %}">
+                    <span class="sidebar-link-icon"><i class="bi bi-bar-chart-fill"></i></span>
+                    <span>Data Visualisation</span>
+                </a>
             </nav>
         </aside>
 

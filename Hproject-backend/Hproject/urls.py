@@ -6,4 +6,5 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('teams/', include('teams.urls')),
     path('messages/', include('messaging.urls')),
+    path('datavis/', include('datavis.urls')),
 ]

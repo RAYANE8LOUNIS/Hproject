@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "organisation",
     "teams",
     "messaging",
+    'datavis',
 ]
 
 MIDDLEWARE = [
