@@ -3,7 +3,7 @@
 {% block page_title %}{{ team.name }}{% endblock %}
 {% block content %}
 <div class="portal-bc">
-    <a href="{% url 'organisation:organisation_overview' %}">Organisation</a><span class="sep">/</span>
+    <a href="{% url 'organisation:department_list' %}">Organisation</a><span class="sep">/</span>
     <a href="{% url 'organisation:team_list' %}">Teams</a><span class="sep">/</span>
     <span class="current">{{ team.name }}</span>
 </div>

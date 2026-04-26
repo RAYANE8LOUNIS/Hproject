@@ -3,7 +3,7 @@
 {% block page_title %}Teams{% endblock %}
 {% block content %}
 <div class="portal-bc">
-    <a href="{% url 'organisation:organisation_overview' %}">Organisation</a><span class="sep">/</span><span class="current">Teams</span>
+    <a href="{% url 'organisation:department_list' %}">Organisation</a><span class="sep">/</span><span class="current">Teams</span>
 </div>
 <div style="margin-bottom:20px;">
     <p style="color:#6b7280;font-size:0.9rem;margin:0;">{{ teams.count }} team{{ teams.count|pluralize }} found</p>
