@@ -19,7 +19,6 @@ class Department(models.Model):
     def __str__(self):
         return self.name
 
-    @property
     def team_count(self):
         return self.teams.count()
 

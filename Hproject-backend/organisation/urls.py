@@ -4,6 +4,7 @@ from . import views
 app_name = 'organisation'
 
 urlpatterns = [
+    path('', views.organisation_overview, name='organisation_overview'),
     path('departments/', views.department_list, name='department_list'),
     path('departments/create/', views.department_create, name='department_create'),
     path('departments/<int:pk>/', views.department_detail, name='department_detail'),
@@ -12,6 +13,9 @@ urlpatterns = [
 
     path('teams/', views.team_list, name='team_list'),
     path('teams/<int:pk>/', views.team_detail, name='team_detail'),
+
+    path('dependencies/', views.dependency_map, name='dependency_map'),
+    path('dependencies/create/', views.dependency_create, name='dependency_create'),
 
     path('audit/', views.audit_log, name='audit_log'),
 ]

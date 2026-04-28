@@ -39,7 +39,7 @@
                     <span>Teams</span>
                 </a>
 
-                <a href="{% url 'organisation:department_list' %}" class="sidebar-link {% block nav_organisation %}{% endblock %}">
+                <a href="{% url 'organisation:organisation_overview' %}" class="sidebar-link {% block nav_organisation %}{% endblock %}">
                     <span class="sidebar-link-icon"><i class="bi bi-building"></i></span>
                     <span>Organisation</span>
                 </a>
@@ -52,6 +52,11 @@
                 <a href="{% url 'schedule_home' %}" class="sidebar-link {% block nav_schedule %}{% endblock %}">
                     <span class="sidebar-link-icon"><i class="bi bi-calendar3"></i></span>
                     <span>Schedule</span>
+                </a>
+
+                <a href="{% url 'reports:dashboard' %}" class="sidebar-link {% block nav_reports %}{% endblock %}">
+                    <span class="sidebar-link-icon"><i class="bi bi-file-earmark-bar-graph"></i></span>
+                    <span>Reports</span>
                 </a>
 
                 <a href="{% url 'datavis_charts' %}" class="sidebar-link {% block nav_datavis %}{% endblock %}">

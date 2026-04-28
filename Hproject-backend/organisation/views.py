@@ -7,6 +7,23 @@ from .models import Department, Team, Dependency, AuditLog
 from .forms import DepartmentForm, DependencyForm
 
 
+@login_required
+def organisation_overview(request):
+    departments = Department.objects.select_related('leader').prefetch_related('teams')
+    teams = Team.objects.select_related('department', 'manager', 'team_type').prefetch_related('members')
+    dependencies = Dependency.objects.select_related('upstream_team', 'downstream_team')
+
+    return render(request, 'organisation/organisation_overview.html', {
+        'departments': departments,
+        'teams': teams,
+        'dependencies': dependencies,
+        'department_count': departments.count(),
+        'team_count': teams.count(),
+        'dependency_count': dependencies.count(),
+        'teams_without_managers': teams.filter(manager__isnull=True),
+    })
+
+
 # ───────────── DEPARTMENTS ─────────────
 
 @login_required
@@ -161,6 +178,50 @@ def team_detail(request, pk):
 
 
 # ───────────── AUDIT LOG ─────────────
+
+@login_required
+def dependency_map(request):
+    dependencies = Dependency.objects.select_related(
+        'upstream_team',
+        'upstream_team__department',
+        'downstream_team',
+        'downstream_team__department',
+    ).order_by('upstream_team__name', 'downstream_team__name')
+    teams = Team.objects.select_related('department').order_by('name')
+
+    return render(request, 'organisation/dependency_map.html', {
+        'dependencies': dependencies,
+        'teams': teams,
+    })
+
+
+@login_required
+def dependency_create(request):
+    if not request.user.is_staff:
+        return redirect('organisation:dependency_map')
+
+    if request.method == 'POST':
+        form = DependencyForm(request.POST)
+        if form.is_valid():
+            dependency = form.save()
+            AuditLog.objects.create(
+                user=request.user,
+                action='created',
+                model_name='Dependency',
+                object_id=dependency.pk,
+                description=(
+                    f'Dependency "{dependency.upstream_team.name} -> '
+                    f'{dependency.downstream_team.name}" created.'
+                )
+            )
+            return redirect('organisation:dependency_map')
+    else:
+        form = DependencyForm()
+
+    return render(request, 'organisation/dependency_form.html', {
+        'form': form
+    })
+
 
 @login_required
 def audit_log(request):

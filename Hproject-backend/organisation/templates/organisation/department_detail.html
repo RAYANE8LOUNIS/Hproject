@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}{{ department.name }} – Sky Portal{% endblock %}
-{% block page_title %}{{ department.name }}{% endblock %}
+{% block nav_organisation %}active{% endblock %}
+{% block page_heading %}{{ department.name }}{% endblock %}
 {% block content %}
 <div class="portal-bc">
     <a href="{% url 'organisation:department_list' %}">Organisation</a><span class="sep">/</span>
@@ -20,7 +21,7 @@
                 {% endif %}
             </div>
             <div class="info-row"><div class="info-label"><i class="bi bi-tag"></i> Specialisation</div><div class="info-value">{{ department.specialisation|default:"Not specified" }}</div></div>
-            <div class="info-row"><div class="info-label"><i class="bi bi-person-badge"></i> Leader</div><div class="info-value">{{ department.leader.get_full_name|default:department.leader.username|default:"Not assigned" }}</div></div>
+            <div class="info-row"><div class="info-label"><i class="bi bi-person-badge"></i> Leader</div><div class="info-value">{% if department.leader %}{{ department.leader.get_full_name|default:department.leader.username }}{% else %}Not assigned{% endif %}</div></div>
             <div class="info-row"><div class="info-label"><i class="bi bi-people"></i> Total Teams</div><div class="info-value"><span class="badge-count">{{ teams.count }}</span></div></div>
             <div class="info-row"><div class="info-label"><i class="bi bi-calendar"></i> Created</div><div class="info-value">{{ department.created_at|date:"d M Y" }}</div></div>
             {% if department.description %}
@@ -40,7 +41,7 @@
                     <div style="font-weight:600;font-size:0.9rem;color:#0d1b4b;">{{ team.name }}</div>
                     <div style="font-size:0.8rem;color:#6b7280;margin-top:2px;">
                         {% if team.team_type %}<span class="badge-dept" style="margin-right:6px;">{{ team.team_type }}</span>{% endif %}
-                        Manager: {{ team.manager.get_full_name|default:team.manager.username|default:"—" }} · {{ team.members.count }} members
+                        Manager: {% if team.manager %}{{ team.manager.get_full_name|default:team.manager.username }}{% else %}Not assigned{% endif %} | {{ team.members.count }} members
                     </div>
                 </div>
                 <div style="display:flex;align-items:center;gap:8px;">
