@@ -29,29 +29,39 @@
                 </div>
 
                 <nav class="sidebar-nav">
-                    <a href="{% url 'dashboard' %}" class="sidebar-link {% block nav_dashboard %}{% endblock %}">
+                    <a href="/teams/dashboard/" class="sidebar-link {% block nav_dashboard %}{% endblock %}">
                         <span class="sidebar-link-icon"></span>
                         <span>Dashboard</span>
                     </a>
 
-                    <a href="{% url 'team_list' %}" class="sidebar-link {% block nav_teams %}{% endblock %}">
+                    <a href="/teams/" class="sidebar-link {% block nav_teams %}{% endblock %}">
                         <span class="sidebar-link-icon"></span>
                         <span>Teams</span>
                     </a>
 
-                    <a href="#" class="sidebar-link">
+                    <a href="/organisation/" class="sidebar-link">
                         <span class="sidebar-link-icon"></span>
                         <span>Organisation</span>
                     </a>
 
-                    <a href="#" class="sidebar-link">
+                    <a href="/messaging/" class="sidebar-link">
                         <span class="sidebar-link-icon"></span>
                         <span>Messages</span>
                     </a>
 
-                    <a href="#" class="sidebar-link">
+                    <a href="/schedule/" class="sidebar-link">
                         <span class="sidebar-link-icon"></span>
                         <span>Schedule</span>
+                    </a>
+
+                    <a href="/reports/" class="sidebar-link">
+                        <span class="sidebar-link-icon"></span>
+                        <span>Reports</span>
+                    </a>
+
+                    <a href="/datavis/" class="sidebar-link">
+                        <span class="sidebar-link-icon"></span>
+                        <span>Data Vis</span>
                     </a>
                 </nav>
             </div>
@@ -69,20 +79,20 @@
                     {% if user.is_authenticated %}
                         <div class="top-shell-profile">
                             <div class="top-shell-avatar"></div>
-                            <span class="top-shell-username">{{ user.get_full_name|default:user.username }}</span>
+                            <span class="top-shell-username">{{ user.username }}</span>
                         </div>
 
-                        <a href="{% url 'profile' %}" class="top-shell-pill-link">Profile</a>
+                        <a href="/accounts/profile/" class="top-shell-pill-link">Profile</a>
 
-                        <form method="post" action="{% url 'logout' %}" class="mb-0">
+                        <form method="post" action="/accounts/logout/" class="mb-0">
                             {% csrf_token %}
                             <button type="submit" class="top-shell-pill-link top-shell-pill-light">
                                 Logout
                             </button>
                         </form>
                     {% else %}
-                        <a href="{% url 'login' %}" class="top-shell-pill-link top-shell-pill-light">Login</a>
-                        <a href="{% url 'signup' %}" class="top-shell-pill-link">Sign Up</a>
+                        <a href="/accounts/login/" class="top-shell-pill-link top-shell-pill-light">Login</a>
+                        <a href="/accounts/signup/" class="top-shell-pill-link">Sign Up</a>
                     {% endif %}
                 </div>
             </header>
