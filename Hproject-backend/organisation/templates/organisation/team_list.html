@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}Teams – Sky Portal{% endblock %}
-{% block page_title %}Teams{% endblock %}
+{% block nav_organisation %}active{% endblock %}
+{% block page_heading %}Organisation Teams{% endblock %}
 {% block content %}
 <div class="portal-bc">
-    <a href="{% url 'organisation:organisation_overview' %}">Organisation</a><span class="sep">/</span><span class="current">Teams</span>
+    <a href="{% url 'organisation:department_list' %}">Organisation</a><span class="sep">/</span><span class="current">Teams</span>
 </div>
 <div style="margin-bottom:20px;">
     <p style="color:#6b7280;font-size:0.9rem;margin:0;">{{ teams.count }} team{{ teams.count|pluralize }} found</p>
@@ -25,9 +26,9 @@
             {% for team in teams %}
             <tr>
                 <td style="font-weight:600;color:#0d1b4b;">{{ team.name }}</td>
-                <td>{% if team.department %}<span class="badge-dept">{{ team.department.name }}</span>{% else %}—{% endif %}</td>
-                <td>{{ team.team_type.name|default:"—" }}</td>
-                <td>{{ team.manager.get_full_name|default:team.manager.username|default:"—" }}</td>
+                <td>{% if team.department %}<span class="badge-dept">{{ team.department.name }}</span>{% else %}Not assigned{% endif %}</td>
+                <td>{{ team.team_type.name|default:"Not assigned" }}</td>
+                <td>{% if team.manager %}{{ team.manager.get_full_name|default:team.manager.username }}{% else %}Not assigned{% endif %}</td>
                 <td><span class="badge-count">{{ team.members.count }}</span></td>
                 <td><span class="{% if team.status == 'active' %}badge-active{% elif team.status == 'disbanded' %}badge-disbanded{% else %}badge-restructured{% endif %}">{{ team.get_status_display }}</span></td>
                 <td><a href="{% url 'organisation:team_detail' team.pk %}" class="btn-portal btn-portal-sm">View</a></td>

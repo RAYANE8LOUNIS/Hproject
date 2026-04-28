@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}{{ team.name }} – Sky Portal{% endblock %}
-{% block page_title %}{{ team.name }}{% endblock %}
+{% block nav_organisation %}active{% endblock %}
+{% block page_heading %}{{ team.name }}{% endblock %}
 {% block content %}
 <div class="portal-bc">
-    <a href="{% url 'organisation:organisation_overview' %}">Organisation</a><span class="sep">/</span>
+    <a href="{% url 'organisation:department_list' %}">Organisation</a><span class="sep">/</span>
     <a href="{% url 'organisation:team_list' %}">Teams</a><span class="sep">/</span>
     <span class="current">{{ team.name }}</span>
 </div>
@@ -14,12 +15,12 @@
                 <div class="portal-card-title" style="font-size:1.05rem;">Team Details</div>
                 <span class="{% if team.status == 'active' %}badge-active{% elif team.status == 'disbanded' %}badge-disbanded{% else %}badge-restructured{% endif %}" style="font-size:0.85rem;padding:5px 14px;">{{ team.get_status_display }}</span>
             </div>
-            <div class="info-row"><div class="info-label"><i class="bi bi-building"></i> Department</div><div class="info-value">{{ team.department.name|default:"—" }}</div></div>
-            <div class="info-row"><div class="info-label"><i class="bi bi-tag"></i> Team Type</div><div class="info-value">{{ team.team_type.name|default:"—" }}</div></div>
-            <div class="info-row"><div class="info-label"><i class="bi bi-person-badge"></i> Manager</div><div class="info-value">{{ team.manager.get_full_name|default:team.manager.username|default:"—" }}</div></div>
-            <div class="info-row"><div class="info-label"><i class="bi bi-slack"></i> Slack</div><div class="info-value">{{ team.slack_channel|default:"—" }}</div></div>
-            <div class="info-row"><div class="info-label"><i class="bi bi-envelope"></i> Email</div><div class="info-value">{% if team.email %}<a href="mailto:{{ team.email }}" style="color:#0d1b4b;">{{ team.email }}</a>{% else %}—{% endif %}</div></div>
-            <div class="info-row"><div class="info-label"><i class="bi bi-git"></i> Repository</div><div class="info-value">{% if team.code_repository %}<a href="{{ team.code_repository }}" target="_blank" style="color:#0d1b4b;">View Repo</a>{% else %}—{% endif %}</div></div>
+            <div class="info-row"><div class="info-label"><i class="bi bi-building"></i> Department</div><div class="info-value">{{ team.department.name|default:"Not assigned" }}</div></div>
+            <div class="info-row"><div class="info-label"><i class="bi bi-tag"></i> Team Type</div><div class="info-value">{{ team.team_type.name|default:"Not assigned" }}</div></div>
+            <div class="info-row"><div class="info-label"><i class="bi bi-person-badge"></i> Manager</div><div class="info-value">{% if team.manager %}{{ team.manager.get_full_name|default:team.manager.username }}{% else %}Not assigned{% endif %}</div></div>
+            <div class="info-row"><div class="info-label"><i class="bi bi-slack"></i> Slack</div><div class="info-value">{{ team.slack_channel|default:"Not recorded" }}</div></div>
+            <div class="info-row"><div class="info-label"><i class="bi bi-envelope"></i> Email</div><div class="info-value">{% if team.email %}<a href="mailto:{{ team.email }}" style="color:#0d1b4b;">{{ team.email }}</a>{% else %}Not recorded{% endif %}</div></div>
+            <div class="info-row"><div class="info-label"><i class="bi bi-git"></i> Repository</div><div class="info-value">{% if team.code_repository %}<a href="{{ team.code_repository }}" target="_blank" style="color:#0d1b4b;">View Repo</a>{% else %}Not recorded{% endif %}</div></div>
             {% if team.purpose %}
             <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f0f2f7;">
                 <div style="font-size:0.84rem;color:#6b7280;margin-bottom:6px;font-weight:600;">Purpose</div>
@@ -36,7 +37,7 @@
                         <div class="member-avatar">{{ member.get_full_name|default:member.username|slice:":2"|upper }}</div>
                         <div>
                             <div class="member-name">{{ member.get_full_name|default:member.username }}</div>
-                            <div class="member-email">{{ member.email|default:"—" }}</div>
+                            <div class="member-email">{{ member.email|default:"No email recorded" }}</div>
                         </div>
                     </div>
                 </div>

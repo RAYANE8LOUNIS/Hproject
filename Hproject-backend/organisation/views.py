@@ -1,42 +1,36 @@
-from django.shortcuts import render
-
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
-from .models import Department, Team, TeamType, Dependency, AuditLog
-from .forms import DepartmentForm, TeamForm, DependencyForm
 
-
-
-# ORGANISATION OVERVIEW
+from .models import Department, Team, Dependency, AuditLog
+from .forms import DepartmentForm, DependencyForm
 
 
 @login_required
 def organisation_overview(request):
-    """Main organisation page showing all departments and team counts."""
-    departments = Department.objects.prefetch_related('teams').all()
-    total_teams = Team.objects.filter(status='active').count()
-    total_departments = departments.count()
+    departments = Department.objects.select_related('leader').prefetch_related('teams')
+    teams = Team.objects.select_related('department', 'manager', 'team_type').prefetch_related('members')
+    dependencies = Dependency.objects.select_related('upstream_team', 'downstream_team')
 
-    context = {
+    return render(request, 'organisation/organisation_overview.html', {
         'departments': departments,
-        'total_teams': total_teams,
-        'total_departments': total_departments,
-    }
-    return render(request, 'organisation/overview.html', context)
+        'teams': teams,
+        'dependencies': dependencies,
+        'department_count': departments.count(),
+        'team_count': teams.count(),
+        'dependency_count': dependencies.count(),
+        'teams_without_managers': teams.filter(manager__isnull=True),
+    })
 
 
-# ─────────────────────────────────────────────
-# DEPARTMENT VIEWS
-# ─────────────────────────────────────────────
+# ───────────── DEPARTMENTS ─────────────
 
 @login_required
 def department_list(request):
-    """List all departments with search support."""
     query = request.GET.get('q', '')
-    departments = Department.objects.prefetch_related('teams').select_related('leader')
+
+    departments = Department.objects.select_related('leader').prefetch_related('teams')
 
     if query:
         departments = departments.filter(
@@ -46,37 +40,33 @@ def department_list(request):
             Q(leader__last_name__icontains=query)
         )
 
-    context = {
+    return render(request, 'organisation/department_list.html', {
         'departments': departments,
         'query': query,
-    }
-    return render(request, 'organisation/department_list.html', context)
+    })
 
 
 @login_required
 def department_detail(request, pk):
-    """View a single department and all its teams."""
     department = get_object_or_404(Department, pk=pk)
     teams = department.teams.select_related('manager', 'team_type').prefetch_related('members')
 
-    context = {
+    return render(request, 'organisation/department_detail.html', {
         'department': department,
         'teams': teams,
-    }
-    return render(request, 'organisation/department_detail.html', context)
+    })
 
 
 @login_required
 def department_create(request):
-    """Create a new department (admin only)."""
     if not request.user.is_staff:
-        messages.error(request, 'You do not have permission to create departments.')
         return redirect('organisation:department_list')
 
     if request.method == 'POST':
         form = DepartmentForm(request.POST)
         if form.is_valid():
             department = form.save()
+
             AuditLog.objects.create(
                 user=request.user,
                 action='created',
@@ -84,19 +74,20 @@ def department_create(request):
                 object_id=department.pk,
                 description=f'Department "{department.name}" created.'
             )
-            messages.success(request, f'Department "{department.name}" created successfully.')
+
             return redirect('organisation:department_detail', pk=department.pk)
     else:
         form = DepartmentForm()
 
-    return render(request, 'organisation/department_form.html', {'form': form, 'action': 'Create'})
+    return render(request, 'organisation/department_form.html', {
+        'form': form,
+        'action': 'Create'
+    })
 
 
 @login_required
 def department_edit(request, pk):
-    """Edit an existing department (admin only)."""
     if not request.user.is_staff:
-        messages.error(request, 'You do not have permission to edit departments.')
         return redirect('organisation:department_list')
 
     department = get_object_or_404(Department, pk=pk)
@@ -105,6 +96,7 @@ def department_edit(request, pk):
         form = DepartmentForm(request.POST, instance=department)
         if form.is_valid():
             form.save()
+
             AuditLog.objects.create(
                 user=request.user,
                 action='updated',
@@ -112,25 +104,27 @@ def department_edit(request, pk):
                 object_id=department.pk,
                 description=f'Department "{department.name}" updated.'
             )
-            messages.success(request, f'Department "{department.name}" updated.')
+
             return redirect('organisation:department_detail', pk=department.pk)
     else:
         form = DepartmentForm(instance=department)
 
-    return render(request, 'organisation/department_form.html', {'form': form, 'action': 'Edit'})
+    return render(request, 'organisation/department_form.html', {
+        'form': form,
+        'action': 'Edit'
+    })
 
 
 @login_required
 def department_delete(request, pk):
-    """Delete a department (admin only)."""
     if not request.user.is_staff:
-        messages.error(request, 'You do not have permission to delete departments.')
         return redirect('organisation:department_list')
 
     department = get_object_or_404(Department, pk=pk)
 
     if request.method == 'POST':
         name = department.name
+
         AuditLog.objects.create(
             user=request.user,
             action='deleted',
@@ -138,21 +132,21 @@ def department_delete(request, pk):
             object_id=department.pk,
             description=f'Department "{name}" deleted.'
         )
+
         department.delete()
-        messages.success(request, f'Department "{name}" deleted.')
         return redirect('organisation:department_list')
 
-    return render(request, 'organisation/department_confirm_delete.html', {'department': department})
+    return render(request, 'organisation/department_confirm_delete.html', {
+        'department': department
+    })
 
 
-# ─────────────────────────────────────────────
-# TEAM VIEWS
-# ─────────────────────────────────────────────
+# ───────────── TEAMS ─────────────
 
 @login_required
 def team_list(request):
-    """List all teams with search support."""
     query = request.GET.get('q', '')
+
     teams = Team.objects.select_related('department', 'manager', 'team_type').prefetch_related('members')
 
     if query:
@@ -163,83 +157,79 @@ def team_list(request):
             Q(manager__last_name__icontains=query)
         )
 
-    context = {
+    return render(request, 'organisation/team_list.html', {
         'teams': teams,
         'query': query,
-    }
-    return render(request, 'organisation/team_list.html', context)
+    })
 
 
 @login_required
 def team_detail(request, pk):
-    """View a single team with full details."""
-    team = get_object_or_404(
-        Team.objects.select_related('department', 'manager', 'team_type').prefetch_related('members'),
-        pk=pk
-    )
-    upstream = Dependency.objects.filter(upstream_team=team).select_related('downstream_team')
-    downstream = Dependency.objects.filter(downstream_team=team).select_related('upstream_team')
+    team = get_object_or_404(Team, pk=pk)
 
-    context = {
+    upstream = Dependency.objects.filter(upstream_team=team)
+    downstream = Dependency.objects.filter(downstream_team=team)
+
+    return render(request, 'organisation/team_detail.html', {
         'team': team,
         'upstream_dependencies': upstream,
         'downstream_dependencies': downstream,
-    }
-    return render(request, 'organisation/team_detail.html', context)
+    })
 
 
-# ─────────────────────────────────────────────
-# DEPENDENCY VIEWS
-# ─────────────────────────────────────────────
+# ───────────── AUDIT LOG ─────────────
 
 @login_required
 def dependency_map(request):
-    """Show all team dependencies as a visual map."""
-    teams = Team.objects.filter(status='active').select_related('department')
-    dependencies = Dependency.objects.select_related('upstream_team', 'downstream_team')
+    dependencies = Dependency.objects.select_related(
+        'upstream_team',
+        'upstream_team__department',
+        'downstream_team',
+        'downstream_team__department',
+    ).order_by('upstream_team__name', 'downstream_team__name')
+    teams = Team.objects.select_related('department').order_by('name')
 
-    # Build JSON-friendly data for JS visualisation
-    nodes = [{'id': t.pk, 'label': t.name, 'group': t.department.name if t.department else 'None'} for t in teams]
-    edges = [{'from': d.upstream_team.pk, 'to': d.downstream_team.pk} for d in dependencies]
-
-    context = {
-        'teams': teams,
+    return render(request, 'organisation/dependency_map.html', {
         'dependencies': dependencies,
-        'nodes': nodes,
-        'edges': edges,
-    }
-    return render(request, 'organisation/dependency_map.html', context)
+        'teams': teams,
+    })
 
 
 @login_required
 def dependency_create(request):
-    """Create a dependency between two teams (admin only)."""
     if not request.user.is_staff:
-        messages.error(request, 'You do not have permission to manage dependencies.')
         return redirect('organisation:dependency_map')
 
     if request.method == 'POST':
         form = DependencyForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Dependency created successfully.')
+            dependency = form.save()
+            AuditLog.objects.create(
+                user=request.user,
+                action='created',
+                model_name='Dependency',
+                object_id=dependency.pk,
+                description=(
+                    f'Dependency "{dependency.upstream_team.name} -> '
+                    f'{dependency.downstream_team.name}" created.'
+                )
+            )
             return redirect('organisation:dependency_map')
     else:
         form = DependencyForm()
 
-    return render(request, 'organisation/dependency_form.html', {'form': form})
+    return render(request, 'organisation/dependency_form.html', {
+        'form': form
+    })
 
-
-# ─────────────────────────────────────────────
-# AUDIT LOG
-# ─────────────────────────────────────────────
 
 @login_required
 def audit_log(request):
-    """View audit trail of all changes (admin only)."""
     if not request.user.is_staff:
-        messages.error(request, 'Access denied.')
-        return redirect('organisation:organisation_overview')
+        return redirect('organisation:department_list')
 
     logs = AuditLog.objects.select_related('user').order_by('-timestamp')
-    return render(request, 'organisation/audit_log.html', {'logs': logs})
+
+    return render(request, 'organisation/audit_log.html', {
+        'logs': logs
+    })

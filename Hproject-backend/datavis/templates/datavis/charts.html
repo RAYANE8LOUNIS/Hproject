@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Data Visualisation | Sky Portal{% endblock %}
+{% block nav_datavis %}active{% endblock %}
+{% block page_heading %}Data Visualisation{% endblock %}
+
+{% block content %}
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="panel-card">
+            <div class="card-body text-center">
+                <h2 style="font-size: 2.6rem; font-weight: 800;">{{ total_departments }}</h2>
+                <p class="page-subtitle">Departments</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel-card">
+            <div class="card-body text-center">
+                <h2 style="font-size: 2.6rem; font-weight: 800;">{{ total_teams }}</h2>
+                <p class="page-subtitle">Teams</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel-card">
+            <div class="card-body text-center">
+                <h2 style="font-size: 2.6rem; font-weight: 800;">{{ total_repositories }}</h2>
+                <p class="page-subtitle">Repositories</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="panel-card">
+            <div class="card-body">
+                <h3 class="sky-section-title">Teams per Department</h3>
+                <canvas id="teamsByDepartmentChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="panel-card">
+            <div class="card-body">
+                <h3 class="sky-section-title">Repositories per Department</h3>
+                <canvas id="repositoriesByDepartmentChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12">
+        <div class="panel-card">
+            <div class="card-body">
+                <h3 class="sky-section-title">Members per Team</h3>
+                <canvas id="membersByTeamChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ department_names|json_script:"department-names-data" }}
+{{ teams_per_department|json_script:"teams-per-department-data" }}
+{{ repos_per_department|json_script:"repos-per-department-data" }}
+{{ team_names|json_script:"team-names-data" }}
+{{ member_counts|json_script:"member-counts-data" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const departmentNames = JSON.parse(document.getElementById("department-names-data").textContent);
+    const teamsPerDepartment = JSON.parse(document.getElementById("teams-per-department-data").textContent);
+    const reposPerDepartment = JSON.parse(document.getElementById("repos-per-department-data").textContent);
+    const teamNames = JSON.parse(document.getElementById("team-names-data").textContent);
+    const memberCounts = JSON.parse(document.getElementById("member-counts-data").textContent);
+
+    new Chart(document.getElementById("teamsByDepartmentChart"), {
+        type: "bar",
+        data: {
+            labels: departmentNames,
+            datasets: [{
+                label: "Teams",
+                data: teamsPerDepartment
+            }]
+        }
+    });
+
+    new Chart(document.getElementById("repositoriesByDepartmentChart"), {
+        type: "bar",
+        data: {
+            labels: departmentNames,
+            datasets: [{
+                label: "Repositories",
+                data: reposPerDepartment
+            }]
+        }
+    });
+
+    new Chart(document.getElementById("membersByTeamChart"), {
+        type: "bar",
+        data: {
+            labels: teamNames,
+            datasets: [{
+                label: "Members",
+                data: memberCounts
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    ticks: {
+                        autoSkip: false,
+                        maxRotation: 90,
+                        minRotation: 45
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

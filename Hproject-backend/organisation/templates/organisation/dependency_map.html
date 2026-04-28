@@ -1,51 +1,66 @@
+<<<<<<< HEAD
 <!-- {% extends 'base.html' %}
 {% block title %}Dependency Map – Sky Portal{% endblock %}
 {% block page_title %}Dependency Map{% endblock %}
 {% block extra_css %}<style>#dep-network{width:100%;height:480px;border:1px solid #e8eaf0;border-radius:12px;background:#fafbfc;}</style>{% endblock %}
+=======
+{% extends 'base.html' %}
+{% block title %}Dependency Map - Sky Portal{% endblock %}
+{% block nav_organisation %}active{% endblock %}
+{% block page_heading %}Dependency Map{% endblock %}
+
+>>>>>>> 619526aff14df2bd7d5fe5b96dc4e6c2bf2a87a2
 {% block content %}
-<div class="portal-bc">
-    <a href="{% url 'organisation:organisation_overview' %}">Organisation</a><span class="sep">/</span><span class="current">Dependency Map</span>
+<div class="panel-card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="sky-section-title mb-1">Team Dependencies</h2>
+                <p class="page-subtitle">Upstream and downstream relationships between engineering teams.</p>
+            </div>
+            {% if user.is_staff %}
+                <a href="{% url 'organisation:dependency_create' %}" class="btn btn-sky-primary">
+                    <i class="bi bi-plus-lg me-2"></i>Add Dependency
+                </a>
+            {% endif %}
+        </div>
+    </div>
 </div>
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-    <p style="color:#6b7280;font-size:0.9rem;margin:0;">Visual map of upstream and downstream team relationships</p>
-    {% if user.is_staff %}<a href="{% url 'organisation:dependency_create' %}" class="btn-portal"><i class="bi bi-plus-lg" style="margin-right:6px;"></i>Add Dependency</a>{% endif %}
-</div>
-<div class="portal-card" style="margin-bottom:20px;">
-    <div class="section-title"><i class="bi bi-diagram-2"></i> Interactive Graph</div>
-    <div id="dep-network"></div>
-    <p style="font-size:0.82rem;color:#9ca3af;margin-top:10px;margin-bottom:0;"><i class="bi bi-info-circle" style="margin-right:4px;"></i>Arrows point from upstream to downstream. Drag to rearrange. Scroll to zoom.</p>
-</div>
-<div class="portal-table">
-    <div class="table-title"><i class="bi bi-table"></i> All Dependencies</div>
-    <table>
-        <thead><tr><th>Upstream Team</th><th></th><th>Downstream Team</th><th>Description</th></tr></thead>
-        <tbody>
-            {% for dep in dependencies %}
-            <tr>
-                <td style="font-weight:600;color:#0d1b4b;"><a href="{% url 'organisation:team_detail' dep.upstream_team.pk %}" style="color:#0d1b4b;text-decoration:none;">{{ dep.upstream_team.name }}</a></td>
-                <td style="color:#9ca3af;"><i class="bi bi-arrow-right"></i></td>
-                <td style="font-weight:600;color:#0d1b4b;"><a href="{% url 'organisation:team_detail' dep.downstream_team.pk %}" style="color:#0d1b4b;text-decoration:none;">{{ dep.downstream_team.name }}</a></td>
-                <td style="color:#6b7280;">{{ dep.description|default:"—" }}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="4" style="text-align:center;padding:40px;color:#9ca3af;">No dependencies defined yet.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+<div class="panel-card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Upstream Team</th>
+                        <th>Relationship</th>
+                        <th>Downstream Team</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dependency in dependencies %}
+                    <tr>
+                        <td>
+                            <strong>{{ dependency.upstream_team.name }}</strong>
+                            <div class="text-muted small">{{ dependency.upstream_team.department.name|default:"No department" }}</div>
+                        </td>
+                        <td class="text-muted">depends on</td>
+                        <td>
+                            <strong>{{ dependency.downstream_team.name }}</strong>
+                            <div class="text-muted small">{{ dependency.downstream_team.department.name|default:"No department" }}</div>
+                        </td>
+                        <td>{{ dependency.description|default:"No description provided" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">No dependencies recorded yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}
-{% block extra_js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css">
-<script>
-    const nodes = new vis.DataSet({{ nodes|safe }});
-    const edges = new vis.DataSet({{ edges|safe }});
-    const options = {
-        edges: { arrows: { to: { enabled: true, scaleFactor: 0.9 } }, color: { color: '#0d1b4b' }, width: 2 },
-        nodes: { shape: 'box', color: { background: '#eff6ff', border: '#0d1b4b' }, font: { color: '#0d1b4b', size: 13, face: 'Segoe UI' }, margin: 12, borderWidth: 1.5 },
-        physics: { stabilization: { iterations: 200 } },
-        interaction: { hover: true }
-    };
-    new vis.Network(document.getElementById('dep-network'), { nodes, edges }, options);
-</script>
-{% endblock %} -->

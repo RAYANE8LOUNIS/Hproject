@@ -1,0 +1,213 @@
+<!-- Student 5 - Reports dashboard template. -->
+{% extends "base.html" %}
+
+{% block title %}Reports | Sky Portal{% endblock %}
+{% block nav_reports %}active{% endblock %}
+{% block page_heading %}Reports{% endblock %}
+
+{% block content %}
+
+<div class="panel-card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+                <h2 class="sky-section-title mb-1">Engineering Team Reports</h2>
+                <p class="page-subtitle">
+                    Generated {{ generated_at|date:"d M Y H:i" }} from the current SQLite database.
+                </p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{% url 'reports:download_pdf' %}" class="btn btn-sky-primary">
+                    <i class="bi bi-filetype-pdf me-2"></i>PDF
+                </a>
+                <a href="{% url 'reports:download_excel' %}" class="btn btn-sky-secondary">
+                    <i class="bi bi-file-earmark-spreadsheet me-2"></i>Excel
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-3">
+        <div class="panel-card">
+            <div class="card-body text-center">
+                <h2 class="stat-number">{{ total_teams }}</h2>
+                <p class="page-subtitle">Teams</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="panel-card">
+            <div class="card-body text-center">
+                <h2 class="stat-number">{{ total_departments }}</h2>
+                <p class="page-subtitle">Departments</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="panel-card">
+            <div class="card-body text-center">
+                <h2 class="stat-number">{{ total_managers }}</h2>
+                <p class="page-subtitle">Managers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="panel-card">
+            <div class="card-body text-center">
+                <h2 class="stat-number">{{ teams_without_managers|length }}</h2>
+                <p class="page-subtitle">Teams Without Managers</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="panel-card">
+            <div class="card-body">
+                <h3 class="sky-section-title">Department Summary</h3>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Department</th>
+                                <th>Leader</th>
+                                <th class="text-center">Teams</th>
+                                <th class="text-center">Members</th>
+                                <th class="text-center">Repos</th>
+                                <th class="text-center">No Manager</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in department_summaries %}
+                            <tr>
+                                <td>
+                                    <strong>{{ item.department.name }}</strong>
+                                    <div class="text-muted small">{{ item.department.specialisation|default:"Not specified" }}</div>
+                                </td>
+                                <td>
+                                    {% if item.department.leader %}
+                                        {{ item.department.leader.get_full_name|default:item.department.leader.username }}
+                                    {% else %}
+                                        Not assigned
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">{{ item.team_count }}</td>
+                                <td class="text-center">{{ item.member_count }}</td>
+                                <td class="text-center">{{ item.repository_count }}</td>
+                                <td class="text-center">{{ item.without_manager_count }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">No departments found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="panel-card">
+            <div class="card-body">
+                <h3 class="sky-section-title">Status Breakdown</h3>
+                {% for item in status_summaries %}
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span>{{ item.label }}</span>
+                        <span class="sky-badge sky-badge-active">{{ item.count }}</span>
+                    </div>
+                {% endfor %}
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <span>Dependencies</span>
+                    <span class="sky-badge">{{ total_dependencies }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center py-2">
+                    <span>Repositories</span>
+                    <span class="sky-badge">{{ total_repositories }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel-card">
+    <div class="card-body">
+        <h3 class="sky-section-title">Teams Without Managers</h3>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th class="text-center">Members</th>
+                        <th>Contact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team in teams_without_managers %}
+                    <tr>
+                        <td><strong>{{ team.name }}</strong></td>
+                        <td>{{ team.department.name|default:"Not assigned" }}</td>
+                        <td>{{ team.get_status_display }}</td>
+                        <td class="text-center">{{ team.members.count }}</td>
+                        <td>
+                            {% if team.email %}
+                                {{ team.email }}
+                            {% elif team.slack_channel %}
+                                {{ team.slack_channel }}
+                            {% else %}
+                                No contact channel
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            No teams without managers were found in the current database.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="panel-card">
+    <div class="card-body">
+        <h3 class="sky-section-title">Data Quality Checks</h3>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="p-3 rounded-4 border h-100">
+                    <div class="text-muted small mb-1">Teams below 5 engineers</div>
+                    <div class="quick-action-title mb-0">{{ teams_below_member_requirement|length }}</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 rounded-4 border h-100">
+                    <div class="text-muted small mb-1">Departments below 3 teams</div>
+                    <div class="quick-action-title mb-0">{{ departments_below_team_requirement|length }}</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 rounded-4 border h-100">
+                    <div class="text-muted small mb-1">Teams without repositories</div>
+                    <div class="quick-action-title mb-0">{{ teams_without_repository|length }}</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 rounded-4 border h-100">
+                    <div class="text-muted small mb-1">Teams without contact channels</div>
+                    <div class="quick-action-title mb-0">{{ teams_without_contact|length }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
