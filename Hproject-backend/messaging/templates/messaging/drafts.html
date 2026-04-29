@@ -63,7 +63,8 @@
 <script>
 function confirmDelete(messageId, subject) {
     document.getElementById('delete-subject').textContent = '"' + subject + '"';
-    document.getElementById('delete-form').action = '/messages/' + messageId + '/delete/';
+    var deleteUrl = "{% url 'messaging:delete_message' 0 %}".replace('0', messageId);
+    document.getElementById('delete-form').action = deleteUrl;
     new bootstrap.Modal(document.getElementById('deleteModal')).show();
 }
 </script>
